@@ -1,0 +1,19 @@
+diff -ruNp firefox-45.0.2.orig/browser/base/content/browser.js firefox-45.0.2/browser/base/content/browser.js
+--- firefox-45.0.2.orig/browser/base/content/browser.js	2016-04-08 01:54:45.000000000 +0200
++++ firefox-45.0.2/browser/base/content/browser.js	2016-04-24 04:35:13.146499537 +0200
+@@ -5646,12 +5646,9 @@ function middleMousePaste(event) {
+   }
+ 
+   getShortcutOrURIAndPostData(clipboard).then(data => {
+-    try {
+-      makeURI(data.url);
+-    } catch (ex) {
+-      // Not a valid URI.
+-      return;
+-    }
++    var URIFixup = Components.classes["@mozilla.org/docshell/urifixup;1"].getService(Components.interfaces.nsIURIFixup);
++    data.url = URIFixup.createFixupURI(data.url, 1).spec;
++    // 1 is FIXUP_FLAG_ALLOW_KEYWORD_LOOKUP
+ 
+     try {
+       addToUrlbarHistory(data.url);
