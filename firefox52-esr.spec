@@ -21,7 +21,7 @@
 
 %define		_basename	firefox
 %define		nspr_ver	4.13.1
-%define		nss_ver		3.28.1
+%define		nss_ver		3.28.5
 
 Summary:	Firefox web browser
 Summary(hu.UTF-8):	Firefox web böngésző
@@ -118,8 +118,6 @@ Requires:	browser-plugins >= 2.0
 Requires:	desktop-file-utils
 Requires:	hicolor-icon-theme
 Requires:	myspell-common
-Requires:	nspr >= 1:%{nspr_ver}
-Requires:	nss >= 1:%{nss_ver}
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	wwwbrowser
 Obsoletes:	iceweasel
@@ -138,7 +136,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_noautoprovfiles	%{_libdir}/%{name}
 
 # and as we don't provide them, don't require either
-%define		_noautoreq	libmozjs.so libxul.so
+%define		_noautoreq	liblgpllibs.so libmozavcodec.so libmozavutil.so libmozgtk.so libmozjs.so libmozsandbox.so libxul.so
 
 %description
 Firefox is an open-source web browser, designed for standards
@@ -155,7 +153,7 @@ standardami, wydajnością i przenośnością.
 
 %package libs
 Summary:	Firefox shared libraries
-Summary(pl.UTF-8):	Biblioteki współdzielone Firefoxa
+Summary(pl.UTF-8):	Biblioteki współdzielone Firefoksa
 Group:		X11/Libraries
 Requires:	cairo >= 1.10.2-5
 Requires:	dbus-glib >= 0.60
@@ -167,12 +165,14 @@ Requires:	libjpeg-turbo
 Requires:	libpng >= 2:1.6.25
 Requires:	libpng(APNG) >= 0.10
 Requires:	libvpx >= 1.5.0
+Requires:	nspr >= 1:%{nspr_ver}
+Requires:	nss >= 1:%{nss_ver}
 Requires:	pango >= 1:1.22.0
 Requires:	sqlite3 >= %{sqlite_build_version}
 Requires:	startup-notification >= 0.8
 Provides:	xulrunner-libs = 2:%{version}-%{release}
 Obsoletes:	iceweasel-libs
-Obsoletes:	xulrunner-libs
+Obsoletes:	xulrunner-libs < 2:%{version}
 
 %description libs
 XULRunner shared libraries.
@@ -182,7 +182,7 @@ Biblioteki współdzielone XULRunnera.
 
 %package devel
 Summary:	Headers for developing programs that will use Firefox
-Summary(pl.UTF-8):	Pliki nagłówkowe do tworzenia programów używających Firefox
+Summary(pl.UTF-8):	Pliki nagłówkowe do tworzenia programów używających Firefoksa
 Group:		X11/Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	nspr-devel >= 1:%{nspr_ver}
@@ -199,7 +199,7 @@ Obsoletes:	xulrunner-devel
 Firefox development package.
 
 %description devel -l pl.UTF-8
-Pakiet programistyczny Firefoxa.
+Pakiet programistyczny Firefoksa.
 
 %prep
 %setup -q -n %{_basename}-%{version}esr
@@ -354,11 +354,11 @@ ln -sf %{_libdir}/%{name}/libxul.so $RPM_BUILD_ROOT%{_libdir}/%{name}-devel/sdk/
 chmod a+rx $RPM_BUILD_ROOT%{_libdir}/%{name}-devel/sdk/bin/xpt.py
 
 # move arch independant ones to datadir
-mv $RPM_BUILD_ROOT%{_libdir}/%{name}/browser/chrome $RPM_BUILD_ROOT%{_datadir}/%{name}/browser/chrome
-mv $RPM_BUILD_ROOT%{_libdir}/%{name}/browser/extensions $RPM_BUILD_ROOT%{_datadir}/%{name}/browser/extensions
-mv $RPM_BUILD_ROOT%{_libdir}/%{name}/browser/icons $RPM_BUILD_ROOT%{_datadir}/%{name}/browser/icons
-mv $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults $RPM_BUILD_ROOT%{_datadir}/%{name}/browser/defaults
-mv $RPM_BUILD_ROOT%{_datadir}/%{name}/browser/defaults/{pref,preferences}
+%{__mv} $RPM_BUILD_ROOT%{_libdir}/%{name}/browser/chrome $RPM_BUILD_ROOT%{_datadir}/%{name}/browser/chrome
+%{__mv} $RPM_BUILD_ROOT%{_libdir}/%{name}/browser/extensions $RPM_BUILD_ROOT%{_datadir}/%{name}/browser/extensions
+%{__mv} $RPM_BUILD_ROOT%{_libdir}/%{name}/browser/icons $RPM_BUILD_ROOT%{_datadir}/%{name}/browser/icons
+%{__mv} $RPM_BUILD_ROOT%{_libdir}/%{name}/defaults $RPM_BUILD_ROOT%{_datadir}/%{name}/browser/defaults
+%{__mv} $RPM_BUILD_ROOT%{_datadir}/%{name}/browser/defaults/{pref,preferences}
 
 ln -s ../../../share/%{name}/browser/chrome $RPM_BUILD_ROOT%{_libdir}/%{name}/browser/chrome
 ln -s ../../../share/%{name}/browser/defaults $RPM_BUILD_ROOT%{_libdir}/%{name}/browser/defaults
