@@ -12,7 +12,7 @@
 +	mozilla-plugin.pc \
 +	$(NULL)
 +
-+ifdef MOZ_NATIVE_NSPR
++ifdef MOZ_SYSTEM_NSPR
 +NSPR_NAME=nspr
 +NSPR_VERSION=$(shell $(NSPR_CONFIG) --version)
 +else

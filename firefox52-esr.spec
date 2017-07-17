@@ -329,9 +329,12 @@ install -d \
 cd obj-%{_target_cpu}
 %{__make} -C browser/installer stage-package libxul.pc libxul-embedding.pc mozilla-js.pc mozilla-plugin.pc \
 	DESTDIR=$RPM_BUILD_ROOT \
-	installdir=%{_libdir}/%{name} \
 	INSTALL_SDK=1 \
-	PKG_SKIP_STRIP=1
+	PKG_SKIP_STRIP=1 \
+	idldir=%{_datadir}/idl/%{name} \
+	includedir=%{_includedir}/%{name} \
+	installdir=%{_libdir}/%{name} \
+	sdkdir=%{_libdir}/%{name}-devel
 
 cp -aL browser/installer/*.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 cp -aL dist/firefox/* $RPM_BUILD_ROOT%{_libdir}/%{name}/
