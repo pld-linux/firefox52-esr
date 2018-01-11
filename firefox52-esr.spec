@@ -6,7 +6,7 @@
 %bcond_without	gtk3		# GTK+ 3.x instead of 2.x
 %bcond_without	kerberos	# disable krb5 support
 %bcond_without	official	# official Firefox branding
-%bcond_without	pgo		# PGO-enabled build (requires working $DISPLAY == :100)
+%bcond_with	pgo		# PGO-enabled build (requires working $DISPLAY == :100)
 # - disabled shared_js - https://bugzilla.mozilla.org/show_bug.cgi?id=1039964
 %bcond_with	shared_js	# shared libmozjs library [broken]
 %bcond_with	system_icu	# build with system ICU (disabled due to crashes with system icu 58.2)
