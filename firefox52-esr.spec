@@ -10,6 +10,7 @@
 # - disabled shared_js - https://bugzilla.mozilla.org/show_bug.cgi?id=1039964
 %bcond_with	shared_js	# shared libmozjs library [broken]
 %bcond_with	system_icu	# build with system ICU (disabled due to crashes with system icu 58.2)
+%bcond_without	clang		# build using Clang/LLVM
 
 # On updating version, grab CVE links from:
 # https://www.mozilla.org/security/known-vulnerabilities/firefox.html
@@ -55,10 +56,11 @@ BuildRequires:	automake
 BuildRequires:	autoconf2_13
 BuildRequires:	bzip2-devel
 BuildRequires:	cairo-devel >= 1.10.2-5
+%{?with_clang:BuildRequires:	clang}
 BuildRequires:	dbus-glib-devel >= 0.60
 BuildRequires:	fontconfig-devel >= 1:2.7.0
 BuildRequires:	freetype-devel >= 1:2.1.8
-BuildRequires:	gcc-c++ >= 6:4.4
+%{!?with_clang:BuildRequires:	gcc-c++ >= 6:4.4}
 BuildRequires:	glib2-devel >= 1:2.22
 BuildRequires:	gstreamer-devel >= 1.0
 BuildRequires:	gstreamer-plugins-base-devel >= 1.0
@@ -232,6 +234,14 @@ cp -p %{_datadir}/automake/config.* build/autoconf
 
 cat << 'EOF' > .mozconfig
 . $topsrcdir/browser/config/mozconfig
+
+%if %{with clang}
+export CC="clang"
+export CXX="clang++"
+%else
+export CC="%{__cc}"
+export CXX="%{__cxx}"
+%endif
 
 mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj-%{_target_cpu}
 
