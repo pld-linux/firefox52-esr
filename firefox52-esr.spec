@@ -134,6 +134,12 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		filterout_cpp		-D_FORTIFY_SOURCE=[0-9]+
 
+%if %{with clang}
+%define		filterout		-fvar-tracking-assignments
+%else
+%define		filterout		-Werror=format-security
+%endif
+
 # don't satisfy other packages
 %define		_noautoprovfiles	%{_libdir}/%{name}
 
