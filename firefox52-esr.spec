@@ -28,12 +28,12 @@ Summary:	Firefox web browser
 Summary(hu.UTF-8):	Firefox web böngésző
 Summary(pl.UTF-8):	Firefox - przeglądarka WWW
 Name:		firefox52-esr
-Version:	52.5.3
+Version:	52.6.0
 Release:	1
 License:	MPL v2.0
 Group:		X11/Applications/Networking
 Source0:	http://releases.mozilla.org/pub/mozilla.org/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
-# Source0-md5:	83cb993309bb62021b9772bf1f71571f
+# Source0-md5:	f08e19c79531d4a9ae4a66a6f8a386ce
 Source3:	%{_basename}.desktop
 Source4:	%{_basename}.sh
 Source5:	vendor.js
