@@ -29,7 +29,7 @@ Summary(hu.UTF-8):	Firefox web böngésző
 Summary(pl.UTF-8):	Firefox - przeglądarka WWW
 Name:		firefox52-esr
 Version:	52.6.0
-Release:	2
+Release:	3
 License:	MPL v2.0
 Group:		X11/Applications/Networking
 Source0:	http://releases.mozilla.org/pub/mozilla.org/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
@@ -51,8 +51,8 @@ Patch10:	freetype.patch
 URL:		https://www.mozilla.org/firefox/
 BuildRequires:	OpenGL-devel
 BuildRequires:	alsa-lib-devel
-BuildRequires:	automake
 BuildRequires:	autoconf2_13
+BuildRequires:	automake
 BuildRequires:	bzip2-devel
 BuildRequires:	cairo-devel >= 1.10.2-5
 %{?with_clang:BuildRequires:	clang}
@@ -84,10 +84,9 @@ BuildRequires:	libvpx-devel >= 1.5.0
 BuildRequires:	nspr-devel >= 1:%{nspr_ver}
 BuildRequires:	nss-devel >= 1:%{nss_ver}
 BuildRequires:	pango-devel >= 1:1.22.0
-BuildRequires:	pixman-devel >= 0.19.2
 BuildRequires:	perl-modules >= 5.004
+BuildRequires:	pixman-devel >= 0.19.2
 BuildRequires:	pkgconfig
-BuildRequires:	pkgconfig(libffi) >= 3.0.9
 BuildRequires:	pulseaudio-devel
 BuildRequires:	python-modules >= 1:2.5
 %{?with_pgo:BuildRequires:	python-modules-sqlite}
@@ -138,6 +137,7 @@ Provides:	wwwbrowser
 Provides:	xulrunner-libs = 2:%{version}-%{release}
 Obsoletes:	firefox-devel
 Obsoletes:	firefox-libs
+Obsoletes:	firefox52-esr-libs
 Obsoletes:	iceweasel
 Obsoletes:	iceweasel-libs
 Obsoletes:	mozilla-firebird
@@ -145,8 +145,8 @@ Obsoletes:	mozilla-firefox
 Obsoletes:	mozilla-firefox-lang-en < 2.0.0.8-3
 Obsoletes:	mozilla-firefox-libs
 Obsoletes:	xulrunner
-Obsoletes:	xulrunner-libs < 42
 Obsoletes:	xulrunner-gnome
+Obsoletes:	xulrunner-libs < 42
 Conflicts:	firefox-lang-resources < %{version}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
