@@ -22,7 +22,7 @@
 
 %define		_basename	firefox
 %define		nspr_ver	4.13.1
-%define		nss_ver		3.28.5
+%define		nss_ver		3.28.6
 
 Summary:	Firefox web browser
 Summary(hu.UTF-8):	Firefox web böngésző
