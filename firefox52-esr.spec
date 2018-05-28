@@ -29,7 +29,7 @@ Summary(hu.UTF-8):	Firefox web böngésző
 Summary(pl.UTF-8):	Firefox - przeglądarka WWW
 Name:		firefox52-esr
 Version:	52.8.0
-Release:	1
+Release:	2
 License:	MPL v2.0
 Group:		X11/Applications/Networking
 Source0:	http://releases.mozilla.org/pub/mozilla.org/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
@@ -41,6 +41,7 @@ Source6:	vendor-ac.js
 Patch0:		idl-parser.patch
 Patch1:		xulrunner-new-libxul.patch
 Patch2:		xulrunner-paths.patch
+Patch3:		ffmpeg4.patch
 Patch4:		%{_basename}-prefs.patch
 Patch5:		%{_basename}-pld-bookmarks.patch
 Patch6:		%{_basename}-no-subshell.patch
@@ -188,6 +189,7 @@ echo 'LOCAL_INCLUDES += $(MOZ_HUNSPELL_CFLAGS)' >> extensions/spellcheck/src/Mak
 %patch0 -p2
 %patch1 -p1
 %patch2 -p2
+%patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p2
