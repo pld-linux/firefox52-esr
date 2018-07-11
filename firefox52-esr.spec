@@ -7,6 +7,7 @@
 %bcond_without	kerberos	# disable krb5 support
 %bcond_without	official	# official Firefox branding
 %bcond_with	pgo		# PGO-enabled build (requires working $DISPLAY == :100)
+%bcond_with	gold		# use gold linker
 # - disabled shared_js - https://bugzilla.mozilla.org/show_bug.cgi?id=1039964
 %bcond_with	shared_js	# shared libmozjs library [broken]
 %bcond_with	system_icu	# build with system ICU (disabled due to crashes with system icu 58.2)
@@ -54,6 +55,7 @@ BuildRequires:	OpenGL-devel
 BuildRequires:	alsa-lib-devel
 BuildRequires:	autoconf2_13
 BuildRequires:	automake
+%{?with_gold:BuildRequires:	binutils >= 3:2.20.51.0.7}
 BuildRequires:	bzip2-devel
 BuildRequires:	cairo-devel >= 1.10.2-5
 %{?with_clang:BuildRequires:	clang}
@@ -254,6 +256,7 @@ ac_add_options --enable-alsa
 ac_add_options --enable-chrome-format=omni
 ac_add_options --enable-default-toolkit=%{?with_gtk3:cairo-gtk3}%{!?with_gtk3:cairo-gtk2}
 ac_add_options --enable-extensions=default
+%{?with_gold:ac_add_options --enable-gold}
 ac_add_options --enable-gio
 ac_add_options --enable-readline
 ac_add_options --enable-safe-browsing
