@@ -30,7 +30,7 @@ Summary(hu.UTF-8):	Firefox web böngésző
 Summary(pl.UTF-8):	Firefox - przeglądarka WWW
 Name:		firefox52-esr
 Version:	52.9.0
-Release:	4
+Release:	5
 License:	MPL v2.0
 Group:		X11/Applications/Networking
 Source0:	http://releases.mozilla.org/pub/mozilla.org/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
@@ -51,6 +51,7 @@ Patch8:		%{_basename}-system-virtualenv.patch
 Patch9:		%{_basename}-Disable-Firefox-Health-Report.patch
 Patch10:	freetype.patch
 Patch11:	xulrunner-pc.patch
+Patch12:	glibc.patch
 URL:		https://www.mozilla.org/firefox/
 BuildRequires:	OpenGL-devel
 BuildRequires:	alsa-lib-devel
@@ -234,6 +235,7 @@ echo 'LOCAL_INCLUDES += $(MOZ_HUNSPELL_CFLAGS)' >> extensions/spellcheck/src/Mak
 %patch9 -p1
 %patch10 -p2
 %patch11 -p1
+%patch12 -p1
 
 %{__sed} -i -e '1s,/usr/bin/env python,%{__python},' xpcom/typelib/xpt/tools/xpt.py xpcom/idl-parser/xpidl/xpidl.py
 
