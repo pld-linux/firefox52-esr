@@ -125,12 +125,12 @@ Requires:	hicolor-icon-theme
 Requires:	myspell-common
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	wwwbrowser
-Obsoletes:	iceweasel
-Obsoletes:	mozilla-firebird
-Obsoletes:	mozilla-firefox
+Obsoletes:	iceweasel < 45
+Obsoletes:	mozilla-firebird < 0.8
+Obsoletes:	mozilla-firefox < 38
 Obsoletes:	mozilla-firefox-lang-en < 2.0.0.8-3
-Obsoletes:	xulrunner
-Obsoletes:	xulrunner-gnome
+Obsoletes:	xulrunner < 2:42
+Obsoletes:	xulrunner-gnome < 2:42
 Conflicts:	firefox-lang-resources < %{version}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -181,9 +181,9 @@ Requires:	pango >= 1:1.22.0
 Requires:	sqlite3 >= %{sqlite_build_version}
 Requires:	startup-notification >= 0.8
 Provides:	xulrunner-libs = 2:%{version}-%{release}
-Obsoletes:	firefox-libs
-Obsoletes:	iceweasel-libs
-Obsoletes:	mozilla-firefox-libs
+Obsoletes:	firefox-libs < 53
+Obsoletes:	iceweasel-libs < 45
+Obsoletes:	mozilla-firefox-libs < 38
 Obsoletes:	xulrunner-libs < 2:%{version}
 Conflicts:	firefox52-esr < 52.9.0-2
 
@@ -202,12 +202,12 @@ Requires:	nspr-devel >= 1:%{nspr_ver}
 Requires:	nss-devel >= 1:%{nss_ver}
 Requires:	python-ply
 Provides:	xulrunner-devel = 2:%{version}-%{release}
-Obsoletes:	firefox-devel
-Obsoletes:	iceweasel-devel
-Obsoletes:	mozilla-devel
-Obsoletes:	mozilla-firefox-devel
-Obsoletes:	seamonkey-devel
-Obsoletes:	xulrunner-devel
+Obsoletes:	firefox-devel < 53
+Obsoletes:	iceweasel-devel < 45
+Obsoletes:	mozilla-devel < 5:1.8
+Obsoletes:	mozilla-firefox-devel < 38
+Obsoletes:	seamonkey-devel < 1.1-2
+Obsoletes:	xulrunner-devel < 2:42
 
 %description devel
 Firefox development package.
