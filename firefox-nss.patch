@@ -1,0 +1,212 @@
+--- firefox-52.9.0esr/dom/indexedDB/IDBTransaction.h.orig	2017-04-11 04:13:20.000000000 +0200
++++ firefox-52.9.0esr/dom/indexedDB/IDBTransaction.h	2023-01-30 17:20:23.523854344 +0100
+@@ -59,7 +59,7 @@ public:
+     READ_ONLY = 0,
+     READ_WRITE,
+     READ_WRITE_FLUSH,
+-    CLEANUP,
++    MODE_CLEANUP,
+     VERSION_CHANGE,
+ 
+     // Only needed for IPC serialization helper, should never be used in code.
+@@ -189,7 +189,7 @@ public:
+     AssertIsOnOwningThread();
+     return mMode == READ_WRITE ||
+            mMode == READ_WRITE_FLUSH ||
+-           mMode == CLEANUP ||
++           mMode == MODE_CLEANUP ||
+            mMode == VERSION_CHANGE;
+   }
+ 
+--- firefox-52.9.0esr/dom/indexedDB/IDBTransaction.cpp.orig	2017-04-11 04:13:20.000000000 +0200
++++ firefox-52.9.0esr/dom/indexedDB/IDBTransaction.cpp	2023-01-30 17:22:00.506243353 +0100
+@@ -216,7 +216,7 @@ IDBTransaction::Create(JSContext* aCx, I
+   MOZ_ASSERT(aMode == READ_ONLY ||
+              aMode == READ_WRITE ||
+              aMode == READ_WRITE_FLUSH ||
+-             aMode == CLEANUP);
++             aMode == MODE_CLEANUP);
+ 
+   RefPtr<IDBTransaction> transaction =
+     new IDBTransaction(aDatabase, aObjectStoreNames, aMode);
+@@ -871,7 +871,7 @@ IDBTransaction::GetMode(ErrorResult& aRv
+     case READ_WRITE_FLUSH:
+       return IDBTransactionMode::Readwriteflush;
+ 
+-    case CLEANUP:
++    case MODE_CLEANUP:
+       return IDBTransactionMode::Cleanup;
+ 
+     case VERSION_CHANGE:
+--- firefox-52.9.0esr/dom/indexedDB/IDBDatabase.cpp.orig	2017-04-11 04:13:20.000000000 +0200
++++ firefox-52.9.0esr/dom/indexedDB/IDBDatabase.cpp	2023-01-30 17:22:18.294567977 +0100
+@@ -668,7 +668,7 @@ IDBDatabase::Transaction(JSContext* aCx,
+       break;
+     case IDBTransactionMode::Readwrite:
+       if (mQuotaExceeded) {
+-        mode = IDBTransaction::CLEANUP;
++        mode = IDBTransaction::MODE_CLEANUP;
+         mQuotaExceeded = false;
+       } else {
+         mode = IDBTransaction::READ_WRITE;
+@@ -678,7 +678,7 @@ IDBDatabase::Transaction(JSContext* aCx,
+       mode = IDBTransaction::READ_WRITE_FLUSH;
+       break;
+     case IDBTransactionMode::Cleanup:
+-      mode = IDBTransaction::CLEANUP;
++      mode = IDBTransaction::MODE_CLEANUP;
+       mQuotaExceeded = false;
+       break;
+     case IDBTransactionMode::Versionchange:
+@@ -713,7 +713,7 @@ IDBDatabase::Transaction(JSContext* aCx,
+ 
+   transaction->SetBackgroundActor(actor);
+ 
+-  if (mode == IDBTransaction::CLEANUP) {
++  if (mode == IDBTransaction::MODE_CLEANUP) {
+     ExpireFileActors(/* aExpireAll */ true);
+   }
+ 
+@@ -863,7 +863,7 @@ IDBDatabase::AbortTransactions(bool aSho
+             // We warn for any transactions that could have written data.
+             case IDBTransaction::READ_WRITE:
+             case IDBTransaction::READ_WRITE_FLUSH:
+-            case IDBTransaction::CLEANUP:
++            case IDBTransaction::MODE_CLEANUP:
+             case IDBTransaction::VERSION_CHANGE:
+               transactionsThatNeedWarning.AppendElement(transaction);
+               break;
+--- firefox-52.9.0esr/dom/indexedDB/IDBCursor.cpp.orig	2017-04-11 04:13:20.000000000 +0200
++++ firefox-52.9.0esr/dom/indexedDB/IDBCursor.cpp	2023-01-30 17:22:34.372654549 +0100
+@@ -696,7 +696,7 @@ IDBCursor::Update(JSContext* aCx, JS::Ha
+     return nullptr;
+   }
+ 
+-  if (mTransaction->GetMode() == IDBTransaction::CLEANUP ||
++  if (mTransaction->GetMode() == IDBTransaction::MODE_CLEANUP ||
+       IsSourceDeleted() ||
+       !mHaveValue ||
+       mType == Type_ObjectStoreKey ||
+--- firefox-52.9.0esr/dom/indexedDB/ActorsParent.cpp.orig	2018-06-21 20:53:54.000000000 +0200
++++ firefox-52.9.0esr/dom/indexedDB/ActorsParent.cpp	2023-01-30 17:22:58.922453551 +0100
+@@ -11529,7 +11529,7 @@ AutoSavepoint::~AutoSavepoint()
+     MOZ_ASSERT(mDEBUGTransaction->GetMode() == IDBTransaction::READ_WRITE ||
+                mDEBUGTransaction->GetMode() ==
+                  IDBTransaction::READ_WRITE_FLUSH ||
+-               mDEBUGTransaction->GetMode() == IDBTransaction::CLEANUP ||
++               mDEBUGTransaction->GetMode() == IDBTransaction::MODE_CLEANUP ||
+                mDEBUGTransaction->GetMode() == IDBTransaction::VERSION_CHANGE);
+ 
+     if (NS_FAILED(mConnection->RollbackSavepoint())) {
+@@ -11545,7 +11545,7 @@ AutoSavepoint::Start(const TransactionBa
+   MOZ_ASSERT(aTransaction);
+   MOZ_ASSERT(aTransaction->GetMode() == IDBTransaction::READ_WRITE ||
+              aTransaction->GetMode() == IDBTransaction::READ_WRITE_FLUSH ||
+-             aTransaction->GetMode() == IDBTransaction::CLEANUP ||
++             aTransaction->GetMode() == IDBTransaction::MODE_CLEANUP ||
+              aTransaction->GetMode() == IDBTransaction::VERSION_CHANGE);
+ 
+   DatabaseConnection* connection = aTransaction->GetDatabase()->GetConnection();
+@@ -14692,7 +14692,7 @@ Database::AllocPBackgroundIDBTransaction
+   if (NS_WARN_IF(aMode != IDBTransaction::READ_ONLY &&
+                  aMode != IDBTransaction::READ_WRITE &&
+                  aMode != IDBTransaction::READ_WRITE_FLUSH &&
+-                 aMode != IDBTransaction::CLEANUP)) {
++                 aMode != IDBTransaction::MODE_CLEANUP)) {
+     ASSERT_UNLESS_FUZZING();
+     return nullptr;
+   }
+@@ -14701,7 +14701,7 @@ Database::AllocPBackgroundIDBTransaction
+   // has write access.
+   if (NS_WARN_IF((aMode == IDBTransaction::READ_WRITE ||
+                   aMode == IDBTransaction::READ_WRITE_FLUSH ||
+-                  aMode == IDBTransaction::CLEANUP) &&
++                  aMode == IDBTransaction::MODE_CLEANUP) &&
+                  mPrincipalInfo.type() == PrincipalInfo::TSystemPrincipalInfo &&
+                  !mChromeWriteAccessAllowed)) {
+     return nullptr;
+@@ -14767,7 +14767,7 @@ Database::RecvPBackgroundIDBTransactionC
+   MOZ_ASSERT(aMode == IDBTransaction::READ_ONLY ||
+              aMode == IDBTransaction::READ_WRITE ||
+              aMode == IDBTransaction::READ_WRITE_FLUSH ||
+-             aMode == IDBTransaction::CLEANUP);
++             aMode == IDBTransaction::MODE_CLEANUP);
+   MOZ_ASSERT(!mClosed);
+ 
+   if (IsInvalidated()) {
+@@ -14926,7 +14926,7 @@ StartTransactionOp::DoDatabaseWork(Datab
+ 
+   Transaction()->SetActiveOnConnectionThread();
+ 
+-  if (Transaction()->GetMode() == IDBTransaction::CLEANUP) {
++  if (Transaction()->GetMode() == IDBTransaction::MODE_CLEANUP) {
+     nsresult rv = aConnection->DisableQuotaChecks();
+     if (NS_WARN_IF(NS_FAILED(rv))) {
+       return rv;
+@@ -15245,7 +15245,7 @@ TransactionBase::VerifyRequestParams(con
+     case RequestParams::TObjectStoreDeleteParams: {
+       if (NS_WARN_IF(mMode != IDBTransaction::READ_WRITE &&
+                      mMode != IDBTransaction::READ_WRITE_FLUSH &&
+-                     mMode != IDBTransaction::CLEANUP &&
++                     mMode != IDBTransaction::MODE_CLEANUP &&
+                      mMode != IDBTransaction::VERSION_CHANGE)) {
+         ASSERT_UNLESS_FUZZING();
+         return false;
+@@ -15269,7 +15269,7 @@ TransactionBase::VerifyRequestParams(con
+     case RequestParams::TObjectStoreClearParams: {
+       if (NS_WARN_IF(mMode != IDBTransaction::READ_WRITE &&
+                      mMode != IDBTransaction::READ_WRITE_FLUSH &&
+-                     mMode != IDBTransaction::CLEANUP &&
++                     mMode != IDBTransaction::MODE_CLEANUP &&
+                      mMode != IDBTransaction::VERSION_CHANGE)) {
+         ASSERT_UNLESS_FUZZING();
+         return false;
+@@ -23959,7 +23959,7 @@ CommitOp::WriteAutoIncrementCounts()
+   mTransaction->AssertIsOnConnectionThread();
+   MOZ_ASSERT(mTransaction->GetMode() == IDBTransaction::READ_WRITE ||
+              mTransaction->GetMode() == IDBTransaction::READ_WRITE_FLUSH ||
+-             mTransaction->GetMode() == IDBTransaction::CLEANUP ||
++             mTransaction->GetMode() == IDBTransaction::MODE_CLEANUP ||
+              mTransaction->GetMode() == IDBTransaction::VERSION_CHANGE);
+ 
+   const nsTArray<RefPtr<FullObjectStoreMetadata>>& metadataArray =
+@@ -24027,7 +24027,7 @@ CommitOp::CommitOrRollbackAutoIncrementC
+   mTransaction->AssertIsOnConnectionThread();
+   MOZ_ASSERT(mTransaction->GetMode() == IDBTransaction::READ_WRITE ||
+              mTransaction->GetMode() == IDBTransaction::READ_WRITE_FLUSH ||
+-             mTransaction->GetMode() == IDBTransaction::CLEANUP ||
++             mTransaction->GetMode() == IDBTransaction::MODE_CLEANUP ||
+              mTransaction->GetMode() == IDBTransaction::VERSION_CHANGE);
+ 
+   nsTArray<RefPtr<FullObjectStoreMetadata>>& metadataArray =
+@@ -24161,7 +24161,7 @@ CommitOp::Run()
+ 
+       connection->FinishWriteTransaction();
+ 
+-      if (mTransaction->GetMode() == IDBTransaction::CLEANUP) {
++      if (mTransaction->GetMode() == IDBTransaction::MODE_CLEANUP) {
+         connection->DoIdleProcessing(/* aNeedsCheckpoint */ true);
+ 
+         connection->EnableQuotaChecks();
+--- firefox-52.9.0esr/dom/indexedDB/ProfilerHelpers.h.orig	2017-04-11 04:13:20.000000000 +0200
++++ firefox-52.9.0esr/dom/indexedDB/ProfilerHelpers.h	2023-01-30 17:23:10.715212995 +0100
+@@ -129,7 +129,7 @@ public:
+       case IDBTransaction::READ_WRITE_FLUSH:
+         AppendLiteral("\"readwriteflush\"");
+         break;
+-      case IDBTransaction::CLEANUP:
++      case IDBTransaction::MODE_CLEANUP:
+         AppendLiteral("\"cleanup\"");
+         break;
+       case IDBTransaction::VERSION_CHANGE:
+--- firefox-52.9.0esr/dom/indexedDB/IDBObjectStore.cpp.orig	2018-06-21 20:53:54.000000000 +0200
++++ firefox-52.9.0esr/dom/indexedDB/IDBObjectStore.cpp	2023-01-30 17:23:19.722754184 +0100
+@@ -1406,7 +1406,7 @@ IDBObjectStore::AddOrPut(JSContext* aCx,
+   MOZ_ASSERT(aCx);
+   MOZ_ASSERT_IF(aFromCursor, aOverwrite);
+ 
+-  if (mTransaction->GetMode() == IDBTransaction::CLEANUP ||
++  if (mTransaction->GetMode() == IDBTransaction::MODE_CLEANUP ||
+       mDeletedSpec) {
+     aRv.Throw(NS_ERROR_DOM_INDEXEDDB_NOT_ALLOWED_ERR);
+     return nullptr;

@@ -16,3 +16,14 @@
  
  #ifdef XP_WIN
  #include <windows.h>
+--- firefox-52.9.0esr/memory/mozjemalloc/jemalloc.c.orig	2017-05-12 02:25:50.000000000 +0200
++++ firefox-52.9.0esr/memory/mozjemalloc/jemalloc.c	2023-01-30 06:15:52.731524546 +0100
+@@ -331,7 +331,7 @@ __FBSDID("$FreeBSD: head/lib/libc/stdlib
+ #endif
+ #include <sys/time.h>
+ #include <sys/types.h>
+-#if !defined(MOZ_MEMORY_SOLARIS) && !defined(MOZ_MEMORY_ANDROID)
++#if !defined(MOZ_MEMORY_SOLARIS) && !defined(MOZ_MEMORY_ANDROID) && !defined(__linux__)
+ #include <sys/sysctl.h>
+ #endif
+ #include <sys/uio.h>

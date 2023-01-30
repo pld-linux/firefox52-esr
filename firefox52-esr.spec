@@ -21,7 +21,7 @@
 # The actual sqlite version (see RHBZ#480989):
 %define		sqlite_build_version %(pkg-config --silence-errors --modversion sqlite3 2>/dev/null || echo ERROR)
 
-%define		_basename	firefox
+%define		srcname	firefox
 %define		nspr_ver	4.13.1
 %define		nss_ver		3.28.6
 
@@ -33,23 +33,23 @@ Version:	52.9.0
 Release:	7
 License:	MPL v2.0
 Group:		X11/Applications/Networking
-Source0:	http://releases.mozilla.org/pub/mozilla.org/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
+Source0:	http://releases.mozilla.org/pub/firefox/releases/%{version}esr/source/%{srcname}-%{version}esr.source.tar.xz
 # Source0-md5:	b8c2f3619c684818be9a513f8aa1dbfd
-Source3:	%{_basename}.desktop
-Source4:	%{_basename}.sh
+Source3:	%{srcname}.desktop
+Source4:	%{srcname}.sh
 Source5:	vendor.js
 Source6:	vendor-ac.js
 Patch0:		idl-parser.patch
 Patch1:		xulrunner-new-libxul.patch
 Patch2:		xulrunner-paths.patch
 Patch3:		ffmpeg4.patch
-Patch4:		%{_basename}-prefs.patch
-Patch5:		%{_basename}-pld-bookmarks.patch
-Patch6:		%{_basename}-no-subshell.patch
-Patch7:		%{_basename}-middle_click_paste.patch
-Patch8:		%{_basename}-system-virtualenv.patch
-Patch9:		%{_basename}-Disable-Firefox-Health-Report.patch
-Patch10:	freetype.patch
+Patch4:		%{srcname}-prefs.patch
+Patch5:		%{srcname}-pld-bookmarks.patch
+Patch6:		%{srcname}-no-subshell.patch
+Patch7:		%{srcname}-middle_click_paste.patch
+Patch8:		%{srcname}-system-virtualenv.patch
+Patch9:		%{srcname}-Disable-Firefox-Health-Report.patch
+Patch10:	%{srcname}-nss.patch
 Patch11:	xulrunner-pc.patch
 Patch12:	glibc.patch
 URL:		https://www.mozilla.org/firefox/
@@ -216,7 +216,7 @@ Firefox development package.
 Pakiet programistyczny Firefoksa.
 
 %prep
-%setup -q -n %{_basename}-%{version}esr
+%setup -q -n %{srcname}-%{version}esr
 
 # avoid using included headers (-I. is before HUNSPELL_CFLAGS)
 %{__rm} extensions/spellcheck/hunspell/src/{*.hxx,hunspell.h}
@@ -231,9 +231,9 @@ echo 'LOCAL_INCLUDES += $(MOZ_HUNSPELL_CFLAGS)' >> extensions/spellcheck/src/Mak
 %patch5 -p1
 %patch6 -p2
 %patch7 -p1
-%patch8 -p2
+%patch8 -p1
 %patch9 -p1
-%patch10 -p2
+%patch10 -p1
 %patch11 -p1
 %patch12 -p1
 
