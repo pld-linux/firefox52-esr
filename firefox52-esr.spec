@@ -52,6 +52,7 @@ Patch9:		%{srcname}-Disable-Firefox-Health-Report.patch
 Patch10:	%{srcname}-nss.patch
 Patch11:	xulrunner-pc.patch
 Patch12:	glibc.patch
+Patch13:	%{srcname}-includes.patch
 URL:		https://www.mozilla.org/firefox/
 BuildRequires:	OpenGL-devel
 BuildRequires:	alsa-lib-devel
@@ -236,6 +237,7 @@ echo 'LOCAL_INCLUDES += $(MOZ_HUNSPELL_CFLAGS)' >> extensions/spellcheck/src/Mak
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
 
 %{__sed} -i -e '1s,/usr/bin/env python,%{__python},' xpcom/typelib/xpt/tools/xpt.py xpcom/idl-parser/xpidl/xpidl.py
 
@@ -244,6 +246,13 @@ echo 'LOCAL_INCLUDES += $(MOZ_HUNSPELL_CFLAGS)' >> extensions/spellcheck/src/Mak
 %endif
 
 %build
+# autoconf2.13 wasn't fully C99-compliant, fails with recent clang - hack output files
+# (need to generate js/src/old-configure first)
+cd js/src
+autoconf2_13 --localdir . old-configure.in > old-configure
+cd ../..
+%{__sed} -i -e 's/^main()/int &/' old-configure js/src/old-configure
+
 cp -p %{_datadir}/automake/config.* build/autoconf
 
 cat << 'EOF' > .mozconfig
