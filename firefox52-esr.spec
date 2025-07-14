@@ -224,20 +224,20 @@ Pakiet programistyczny Firefoksa.
 # hunspell needed for factory including mozHunspell.h
 echo 'LOCAL_INCLUDES += $(MOZ_HUNSPELL_CFLAGS)' >> extensions/spellcheck/src/Makefile.in
 
-%patch0 -p2
-%patch1 -p1
-%patch2 -p2
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p2
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
+%patch -P0 -p2
+%patch -P1 -p1
+%patch -P2 -p2
+%patch -P3 -p1
+%patch -P4 -p1
+%patch -P5 -p1
+%patch -P6 -p2
+%patch -P7 -p1
+%patch -P8 -p1
+%patch -P9 -p1
+%patch -P10 -p1
+%patch -P11 -p1
+%patch -P12 -p1
+%patch -P13 -p1
 
 %{__sed} -i -e '1s,/usr/bin/env python,%{__python},' xpcom/typelib/xpt/tools/xpt.py xpcom/idl-parser/xpidl/xpidl.py
 
